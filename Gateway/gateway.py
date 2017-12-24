@@ -1,3 +1,5 @@
+# import painlessMesh
+
 def receivedMessage(origem, msg):
     pass
 
