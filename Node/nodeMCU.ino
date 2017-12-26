@@ -58,6 +58,9 @@ struct SnifferPacket{
 
 static void showMetadata(struct SnifferPacket *snifferPacket) {
 
+  DynamicJsonBuffer jsonBuffer(512);
+  JsonObject& root = jsonBuffer.createObject();
+
   unsigned int frameControl = ((unsigned int)snifferPacket->data[1] << 8) + snifferPacket->data[0];
 
   uint8_t version      = (frameControl & 0b0000000000000011) >> 0;
@@ -71,22 +74,28 @@ static void showMetadata(struct SnifferPacket *snifferPacket) {
       frameSubType != SUBTYPE_PROBE_REQUEST)
         return;
 
-  Serial.print("RSSI: ");
-  Serial.print(snifferPacket->rx_ctrl.rssi, DEC);
+//  Serial.print("RSSI: ");
+//  Serial.print(snifferPacket->rx_ctrl.rssi, DEC);
+  root["RSSI"] = snifferPacket->rx_ctrl.rssi;
 
-  Serial.print(" Ch: ");
-  Serial.print(wifi_get_channel());
+//  Serial.print(" Ch: ");
+//  Serial.print(wifi_get_channel());
+  root["Ch"] = wifi_get_channel();
 
   char addr[] = "00:00:00:00:00:00";
   getMAC(addr, snifferPacket->data, 10);
-  Serial.print(" Peer MAC: ");
-  Serial.print(addr);
+//  Serial.print(" Peer MAC: ");
+//  Serial.print(addr);
+  root["MAC"] = addr;
 
   uint8_t SSID_length = snifferPacket->data[25];
-  Serial.print(" SSID: ");
-  printDataSpan(26, SSID_length, snifferPacket->data);
+//  Serial.print(" SSID: ");
+//  printDataSpan(26, SSID_length, snifferPacket->data);
+  root["SSID"] = printDataSpan(26, SSID_length, snifferPacket->data);
 
-  Serial.println();
+//  Serial.println();
+//  root.printTo(Serial);
+//  Serial.println();
 }
 
 /**
@@ -97,10 +106,15 @@ static void ICACHE_FLASH_ATTR sniffer_callback(uint8_t *buffer, uint16_t length)
   showMetadata(snifferPacket);
 }
 
-static void printDataSpan(uint16_t start, uint16_t size, uint8_t* data) {
+static String printDataSpan(uint16_t start, uint16_t size, uint8_t* data) {
+  String strSsid;
+  char n;
   for(uint16_t i = start; i < DATA_LENGTH && i < start+size; i++) {
-    Serial.write(data[i]);
+//    Serial.write(data[i]);
+    n = data[i];
+    strSsid.concat(n);
   }
+  return strSsid;
 }
 
 static void getMAC(char *addr, uint8_t* data, uint16_t offset) {
@@ -122,28 +136,27 @@ void channelHop()
   wifi_set_channel(new_channel);
 }
 
-bool modoMesh = true;
-Task taskChaveamento ( TASK_SECOND * 15 , TASK_FOREVER, &chaveamento); //Task que faz o chaveamento, ocorre a cada 15 segundos
+bool modo = true;
+Task taskChaveamento ( TASK_SECOND * 15 , TASK_FOREVER, &chaveamento);
 Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
 
 void chaveamento(){
-  if (modoMesh == true){
+  if (modo == true){
     Serial.println("Modo Mesh");
-    wifi_set_opmode(STATIONAP_MODE); //Seta o modo para Station e AP
-    os_timer_disarm(&channelHop_timer); //desabilita a troca de canal
-    wifi_promiscuous_enable(DISABLE); // desabilita o modo promiscuo para parar de capturar pacotes
-    wifi_set_channel(1); // seta o canal para 1, padrao do painlessMesh
+    wifi_set_opmode(STATIONAP_MODE);
+    os_timer_disarm(&channelHop_timer);
+    wifi_promiscuous_enable(DISABLE);
+    wifi_set_channel(1);
 
     meshStart();
-    modoMesh = false;
-    taskChaveamento.delay(15000); //delay de 15 segundos para a operaçao do Mesh, pode ser alterado
+    modo = false;
+//    taskChaveamento.delay(15000);
     } else {
       Serial.println("Modo Sniffer");
-      mesh.stop(); //para o modo Mesh
-      snifferStart(); // inicia a captura de pacotes
+      mesh.stop();
+      snifferStart();
       modo = true;
       }
-
   }
 
 void snifferStart() {
@@ -181,7 +194,6 @@ void nodeTimeAdjustedCallback(int32_t offset) {
 }
 
 void meshStart() {
-
 
 //mesh.setDebugMsgTypes( ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE ); // all types on
   mesh.setDebugMsgTypes( ERROR | STARTUP );  // set before init() so that you can see startup messages
