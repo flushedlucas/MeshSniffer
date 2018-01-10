@@ -1,25 +1,46 @@
-# import painlessMesh
+# -*- coding: cp1252 -*-
+import os
+from socket import *
+import mysql.connector
 
-def receivedMessage(origem, msg):
-    pass
+con = mysql.connector.connect(user='admin',password='admin123',host='localhost',database='meshdb')
+cursor = con.cursor()
 
-def sendSingle(dest, msg):
-    pass
+def inserirBanco(cursor, lista):
+   cursor.execute("""INSERT INTO dadosCapturados (id, rssi, ch, addr, ssid) VALUES (null,'%s','%s','%s','%s')""" %(lista[0], lista[1], lista[2], lista[3] ) )
+   con.commit()
 
-def sendBroadcast(msg):
-    pass
+serverPort = 12000
+#Cria o Socket TCP (SOCK_STREAM) para rede IPv4 (AF_INET)
+serverSocket = socket(AF_INET,SOCK_STREAM)
+serverSocket.bind(('',serverPort))
 
-def removeConnection(connID):
-    pass
+#Socket fica ouvindo conexoes. O valor 1 indica que uma conexao pode ficar na fila
+serverSocket.listen(1)
 
-def readJsonObject():
-    pass
+print("Servidor pronto para receber mensagens. Digite Ctrl+C para terminar.")
 
-def handleMessage(fromID, json):
-    pass
+while 1:
+    try:
+        #Cria um socket para tratar a conexao do cliente
+        connectionSocket, addr = serverSocket.accept()
 
-def sendNodeSync(fromID, request):
-    pass
+        dadosRecebidos = connectionSocket.recv(1024)
+        captura = dadosRecebidos.split(" ")
+        print "captura === %s" % captura
 
-def nodeTime(): #Retorna o tempo do nó
-    pass
+	listaCaptura = captura[0].split("\n")
+
+	for texto in listaCaptura:
+		lista = texto.split(",")
+		if len(lista) == 4:
+			inserirBanco(cursor, lista)
+
+	connectionSocket.send("Dados recebidos com sucesso!")
+
+	connectionSocket.close()
+
+    except (KeyboardInterrupt, SystemExit):
+        break
+
+serverSocket.close()
