@@ -27,18 +27,18 @@ while 1:
 
         dadosRecebidos = connectionSocket.recv(1024)
         captura = dadosRecebidos.split(" ")
-        print "captura === %s" % captura
 
-	listaCaptura = captura[0].split("\n")
-
-	for texto in listaCaptura:
-		lista = texto.split(",")
-		if len(lista) == 4:
-			inserirBanco(cursor, lista)
-
-	connectionSocket.send("Dados recebidos com sucesso!")
-
-	connectionSocket.close()
+        listaCaptura = captura[0].split("\n")
+        print "********* Dados Inseridos no BD *********"
+    	for texto in listaCaptura:
+    		lista = texto.split(",")
+    		if len(lista) == 4:
+    			inserirBanco(cursor, lista)
+                print texto + "\n"
+    
+    	connectionSocket.send("Gateway recebeu os dados com sucesso!")
+    
+    	connectionSocket.close()
 
     except (KeyboardInterrupt, SystemExit):
         break
