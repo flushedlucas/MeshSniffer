@@ -4,6 +4,7 @@
 const char* host = "10.109.102.2";
 const int httpPort = 12000;
 
+String idNode = "";
 String addMac = "0";
 String dadosDevice = "";
 String dados = "";
@@ -104,8 +105,8 @@ static void showMetadata(struct SnifferPacket *snifferPacket) {
 
   Serial.println();
   
-  dadosDevice += dadosRssi + "," + dadosCh + "," + dadosAddr + "," + dadosSsid + "\n";
-  
+  dadosDevice += idNode + "," + dadosRssi + "," + dadosCh + "," + dadosAddr + "," + dadosSsid + "\n";
+
 }
 
 /**
@@ -157,6 +158,7 @@ void chaveamento(){
     wifi_set_channel(1); // seta o canal para 1, padrao do painlessMesh
 
     meshStart();
+    Serial.println(dadosDevice);
     tcpteste(dadosDevice);
     
     modoMesh = false;
@@ -193,6 +195,7 @@ void snifferStart() {
 
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
+  tcpteste(msg.c_str());
 }
 
 void newConnectionCallback(uint32_t nodeId) {
@@ -220,6 +223,8 @@ void meshStart() {
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
   taskSendMessage.enable() ;
+
+  idNode = mesh.getNodeId();
   
 }
 
@@ -240,6 +245,7 @@ void tcpteste(String textoServer) {
   }
 
   // This will send the request to the server
+  // String msg = mesh.getNodeId() + "," + textoServer;
   client.print(textoServer);
   unsigned long timeout = millis();
   while (client.available() == 0) {
