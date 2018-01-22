@@ -104,9 +104,16 @@ static void showMetadata(struct SnifferPacket *snifferPacket) {
   dadosSsid = printDataSpan(26, SSID_length, snifferPacket->data);
 
   Serial.println();
+<<<<<<< HEAD
   
   dadosDevice += idNode + "," + dadosRssi + "," + dadosCh + "," + dadosAddr + "," + dadosSsid + "\n";
 
+=======
+
+  uint32_t nodeId = mesh.getNodeId();
+
+  dadosDevice += nodeId + "," + dadosRssi + "," + dadosCh + "," + dadosAddr + "," + dadosSsid + "\n";
+>>>>>>> branch 'master' of https://github.com/flushedlucas/MeshSniffer.git
 }
 
 /**
@@ -195,8 +202,12 @@ void snifferStart() {
 
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
+<<<<<<< HEAD
   tcpteste(msg.c_str());
 }
+=======
+//  tcpTeste(msg.c_str()); //Envia o que foi recebido para o gateway
+>>>>>>> branch 'master' of https://github.com/flushedlucas/MeshSniffer.git
 
 void newConnectionCallback(uint32_t nodeId) {
     Serial.printf("--> startHere: New Connection, nodeId = %u\n", nodeId);

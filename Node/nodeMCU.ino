@@ -20,6 +20,16 @@ extern "C" {
 #define   MESH_PASSWORD   "somethingSneaky"
 #define   MESH_PORT       5555
 
+String addMac = "0";
+String dadosDevice = "";
+String dados = "";
+String dadosRssi = "";
+String dadosAddr = "";
+String dadosCh = "";
+String dadosSsid = "";
+
+uint32_t gateway = 2785176934;
+
 painlessMesh  mesh;
 
 struct RxControl {
@@ -58,8 +68,6 @@ struct SnifferPacket{
 
 static void showMetadata(struct SnifferPacket *snifferPacket) {
 
-  DynamicJsonBuffer jsonBuffer(512);
-  JsonObject& root = jsonBuffer.createObject();
 
   unsigned int frameControl = ((unsigned int)snifferPacket->data[1] << 8) + snifferPacket->data[0];
 
@@ -74,28 +82,30 @@ static void showMetadata(struct SnifferPacket *snifferPacket) {
       frameSubType != SUBTYPE_PROBE_REQUEST)
         return;
 
-//  Serial.print("RSSI: ");
-//  Serial.print(snifferPacket->rx_ctrl.rssi, DEC);
-  root["RSSI"] = snifferPacket->rx_ctrl.rssi;
+  Serial.print("RSSI: ");
+  Serial.print(snifferPacket->rx_ctrl.rssi, DEC);
+  dadosRssi = snifferPacket->rx_ctrl.rssi;
 
-//  Serial.print(" Ch: ");
-//  Serial.print(wifi_get_channel());
-  root["Ch"] = wifi_get_channel();
+  Serial.print(" Ch: ");
+  Serial.print(wifi_get_channel());
+  dadosCh = wifi_get_channel();
 
   char addr[] = "00:00:00:00:00:00";
   getMAC(addr, snifferPacket->data, 10);
-//  Serial.print(" Peer MAC: ");
-//  Serial.print(addr);
-  root["MAC"] = addr;
+  Serial.print(" Peer MAC: ");
+  Serial.print(addr);
+  dadosAddr = addr;
 
   uint8_t SSID_length = snifferPacket->data[25];
-//  Serial.print(" SSID: ");
-//  printDataSpan(26, SSID_length, snifferPacket->data);
-  root["SSID"] = printDataSpan(26, SSID_length, snifferPacket->data);
+  Serial.print(" SSID: ");
+  dadosSsid = printDataSpan(26, SSID_length, snifferPacket->data);
 
-//  Serial.println();
-//  root.printTo(Serial);
-//  Serial.println();
+  Serial.println();
+
+  uint32_t nodeId = mesh.getNodeId();
+
+  dadosDevice += nodeId + "," + dadosRssi + "," + dadosCh + "," + dadosAddr + "," + dadosSsid + "\n";
+
 }
 
 /**
@@ -150,7 +160,7 @@ void chaveamento(){
 
     meshStart();
     modo = false;
-//    taskChaveamento.delay(15000);
+    taskChaveamento.delay(15000);
     } else {
       Serial.println("Modo Sniffer");
       mesh.stop();
@@ -208,9 +218,13 @@ void meshStart() {
 }
 
 void sendMessage() {
-  String msg = "Hello from node ";
-  msg += mesh.getNodeId();
-  mesh.sendBroadcast( msg );
+//  String msg = "Hello from node ";
+//  msg += mesh.getNodeId();
+//  mesh.sendBroadcast( msg + dadosDevice);
+    bool enviado = mesh.sendSingle(gateway, dadosDevice);
+    if ( enviado == true){
+          dadosDevice = "";
+      }
   taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
 
 }
