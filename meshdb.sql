@@ -2,10 +2,10 @@
 -- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: 10-Jan-2018 às 14:09
--- Versão do servidor: 5.5.58-0ubuntu0.14.04.1
--- PHP Version: 7.1.6
+-- Host: localhost
+-- Tempo de geração: 22/01/2018 às 13:41
+-- Versão do servidor: 10.1.25-MariaDB
+-- Versão do PHP: 7.1.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `meshdb`
+-- Banco de dados: `meshdb`
 --
 CREATE DATABASE IF NOT EXISTS `meshdb` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `meshdb`;
@@ -27,11 +27,12 @@ USE `meshdb`;
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `dadosCapturados`
+-- Estrutura para tabela `dadosCapturados`
 --
 
 CREATE TABLE `dadosCapturados` (
   `id` int(8) NOT NULL,
+  `nodeId` varchar(45) NOT NULL,
   `rssi` varchar(5) NOT NULL,
   `ch` varchar(5) NOT NULL,
   `addr` varchar(20) NOT NULL,
@@ -39,24 +40,24 @@ CREATE TABLE `dadosCapturados` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Indexes for dumped tables
+-- Índices de tabelas apagadas
 --
 
 --
--- Indexes for table `dadosCapturados`
+-- Índices de tabela `dadosCapturados`
 --
 ALTER TABLE `dadosCapturados`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de tabelas apagadas
 --
 
 --
--- AUTO_INCREMENT for table `dadosCapturados`
+-- AUTO_INCREMENT de tabela `dadosCapturados`
 --
 ALTER TABLE `dadosCapturados`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1578;COMMIT;
+  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

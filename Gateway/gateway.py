@@ -1,15 +1,14 @@
 # -*- coding: cp1252 -*-
-import os
 from socket import *
 import mysql.connector
 
-con = mysql.connector.connect(user='admin', password='admin123', host='localhost', database='meshdb')
+con = mysql.connector.connect(user='root', password='', host='localhost', database='meshdb')
 cursor = con.cursor()
 
 
 def inserirBanco(cursor, lista):
-    cursor.execute("""INSERT INTO dadosCapturados (id, rssi, ch, addr, ssid) VALUES (null,'%s','%s','%s','%s')""" % (
-    lista[0], lista[1], lista[2], lista[3]))
+    cursor.execute("""INSERT INTO dadosCapturados (id, nodeId, rssi, ch, addr, ssid) VALUES (null, '%s', '%s','%s','%s','%s')""" % (
+    lista[0], lista[1], lista[2], lista[3], lista[4]))
     con.commit()
 
 
@@ -35,7 +34,7 @@ while 1:
         print("********* Dados Inseridos no BD *********")
         for texto in listaCaptura:
             lista = texto.split(",")
-            if len(lista) == 4:
+            if len(lista) == 5:
                 inserirBanco(cursor, lista)
             print(texto + "\n")
 
