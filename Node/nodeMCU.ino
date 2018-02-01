@@ -20,6 +20,8 @@ extern "C" {
 #define   MESH_PASSWORD   "somethingSneaky"
 #define   MESH_PORT       5555
 
+
+String nodeId = "";
 String addMac = "0";
 String dadosDevice = "";
 String dados = "";
@@ -102,8 +104,7 @@ static void showMetadata(struct SnifferPacket *snifferPacket) {
 
   Serial.println();
 
-  uint32_t nodeId = mesh.getNodeId();
-
+  nodeId = "" + nodeId;
   dadosDevice += nodeId + "," + dadosRssi + "," + dadosCh + "," + dadosAddr + "," + dadosSsid + "\n";
 
 }
@@ -160,7 +161,7 @@ void chaveamento(){
 
     meshStart();
     modo = false;
-    taskChaveamento.delay(15000);
+    taskChaveamento.delay(30000);
     } else {
       Serial.println("Modo Sniffer");
       mesh.stop();
@@ -214,7 +215,10 @@ void meshStart() {
   mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
-  taskSendMessage.enable() ;
+  taskSendMessage.enable();
+
+  nodeId = String(mesh.getNodeId());
+
 }
 
 void sendMessage() {
@@ -222,8 +226,11 @@ void sendMessage() {
 //  msg += mesh.getNodeId();
 //  mesh.sendBroadcast( msg + dadosDevice);
     bool enviado = mesh.sendSingle(gateway, dadosDevice);
+    Serial.println("*************" + dadosDevice);
+
     if ( enviado == true){
-          dadosDevice = "";
+    	Serial.println("****** ENVIADO *******");
+        dadosDevice = "";
       }
   taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
 
