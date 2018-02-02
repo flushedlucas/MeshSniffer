@@ -158,16 +158,15 @@ void chaveamento(){
     wifi_set_channel(1); // seta o canal para 1, padrao do painlessMesh
 
     meshStart();
-    Serial.println(dadosDevice);
+//    Serial.println(dadosDevice);
     tcpteste(dadosDevice);
-    
+
     modoMesh = false;
-    taskChaveamento.delay(15000); //delay de 15 segundos para a operaçao do Mesh, pode ser alterado
+    taskChaveamento.delay(30000); //delay de 15 segundos para a operaçao do Mesh, pode ser alterado
     //tcpteste(dadosDevice);
-    
+
     } else {
       Serial.println("Modo Sniffer");
-      dadosDevice = "";
       mesh.stop(); //para o modo Mesh
       snifferStart(); // inicia a captura de pacotes
       modoMesh = true;
@@ -195,7 +194,9 @@ void snifferStart() {
 
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
-  tcpteste(msg.c_str());
+    dadosDevice += msg.c_str();
+    Serial.println(dadosDevice);
+
 }
 
 void newConnectionCallback(uint32_t nodeId) {
@@ -212,7 +213,7 @@ void nodeTimeAdjustedCallback(int32_t offset) {
 
 void meshStart() {
 
-
+  idNode = "";
 //mesh.setDebugMsgTypes( ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE ); // all types on
   mesh.setDebugMsgTypes( ERROR | STARTUP );  // set before init() so that you can see startup messages
 
@@ -224,8 +225,8 @@ void meshStart() {
 
   taskSendMessage.enable() ;
 
-  idNode = mesh.getNodeId();
-  
+  idNode += mesh.getNodeId();
+
 }
 
 void sendMessage() {
@@ -247,6 +248,7 @@ void tcpteste(String textoServer) {
   // This will send the request to the server
   // String msg = mesh.getNodeId() + "," + textoServer;
   client.print(textoServer);
+  dadosDevice = "";
   unsigned long timeout = millis();
   while (client.available() == 0) {
     if (millis() - timeout > 5000) {
@@ -255,15 +257,15 @@ void tcpteste(String textoServer) {
       return;
     }
   }
-  
+
   // Read all the lines of the reply from server and print them to Serial
   while(client.available()){
     String line = client.readStringUntil('\r');
     Serial.print(line);
   }
-  
+
   Serial.println();
-  Serial.println("closing connection"); 
+  Serial.println("closing connection");
 }
 
 void setup() {
@@ -271,12 +273,12 @@ void setup() {
 
   mesh.scheduler.addTask( taskSendMessage );
   mesh.scheduler.addTask( taskChaveamento );
-
   taskChaveamento.enable();
   }
 
 void loop() {
   mesh.update();
+  tcpteste(dadosDevice);
   //tcpteste(dadosDevice);
   //tcpteste(dadosRssi);
   }
