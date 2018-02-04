@@ -146,7 +146,7 @@ void channelHop()
 }
 
 bool modoMesh = true;
-Task taskChaveamento ( TASK_SECOND * 15 , TASK_FOREVER, &chaveamento); //Task que faz o chaveamento, ocorre a cada 15 segundos
+//Task taskChaveamento ( TASK_SECOND * 15 , TASK_FOREVER, &chaveamento); //Task que faz o chaveamento, ocorre a cada 15 segundos
 Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
 
 void chaveamento(){
@@ -271,9 +271,11 @@ void tcpteste(String textoServer) {
 void setup() {
   Serial.begin(115200);
 
+  meshStart();
+
   mesh.scheduler.addTask( taskSendMessage );
-  mesh.scheduler.addTask( taskChaveamento );
-  taskChaveamento.enable();
+//  mesh.scheduler.addTask( taskChaveamento );
+//  taskChaveamento.enable();
   }
 
 void loop() {

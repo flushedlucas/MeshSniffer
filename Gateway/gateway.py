@@ -13,6 +13,7 @@ def inserirBanco(cursor, lista):
 serverPort = 12000
 # Cria o Socket TCP (SOCK_STREAM) para rede IPv4 (AF_INET)
 serverSocket = socket(AF_INET, SOCK_STREAM)
+serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 serverSocket.bind(('', serverPort))
 
 # Socket fica ouvindo conexoes. O valor 1 indica que uma conexao pode ficar na fila
