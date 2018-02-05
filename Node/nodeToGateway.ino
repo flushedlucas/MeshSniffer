@@ -162,8 +162,8 @@ void chaveamento(){
     tcpteste(dadosDevice);
 
     modoMesh = false;
-    taskChaveamento.delay(30000); //delay de 15 segundos para a operaçao do Mesh, pode ser alterado
-    //tcpteste(dadosDevice);
+    //taskChaveamento.delay(30000); //delay de 15 segundos para a operaçao do Mesh, pode ser alterado
+    tcpteste(dadosDevice);
 
     } else {
       Serial.println("Modo Sniffer");
@@ -193,10 +193,10 @@ void snifferStart() {
 }
 
 void receivedCallback( uint32_t from, String &msg ) {
-  Serial.printf("startHere: Received from %u msg=%s\n", from, msg.c_str());
+  Serial.printf("++++++ startHere: Received from %u msg=%s\n", from, msg.c_str());
     dadosDevice += msg.c_str();
     Serial.println(dadosDevice);
-
+    //tcpteste(dadosDevice);
 }
 
 void newConnectionCallback(uint32_t nodeId) {
@@ -234,6 +234,7 @@ void sendMessage() {
   msg += mesh.getNodeId();
   mesh.sendBroadcast( msg );
   taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
+  //tcpteste(dadosDevice);
 
 }
 
