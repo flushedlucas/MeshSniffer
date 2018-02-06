@@ -149,7 +149,7 @@ void channelHop()
 
 bool modo = true;
 Task taskChaveamento ( TASK_SECOND * 15 , TASK_FOREVER, &chaveamento);
-Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
+Task taskSendMessage( TASK_SECOND * 5 , TASK_FOREVER, &sendMessage );
 
 void chaveamento(){
   if (modo == true){
@@ -164,6 +164,7 @@ void chaveamento(){
     taskChaveamento.delay(30000);
     } else {
       Serial.println("Modo Sniffer");
+      taskSendMessage.disable();
       mesh.stop();
       snifferStart();
       modo = true;
@@ -215,7 +216,7 @@ void meshStart() {
   mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
-  taskSendMessage.enable();
+  taskSendMessage.enable() ;
 
   nodeId = String(mesh.getNodeId());
 
@@ -225,14 +226,16 @@ void sendMessage() {
 //  String msg = "Hello from node ";
 //  msg += mesh.getNodeId();
 //  mesh.sendBroadcast( msg + dadosDevice);
-    bool enviado = mesh.sendSingle(gateway, dadosDevice);
-    Serial.println("*************" + dadosDevice);
+    if (dadosDevice.length() > 0) {
+      bool enviado = mesh.sendSingle(gateway, dadosDevice);
+      Serial.println("*************" + dadosDevice);
 
-    if ( enviado == true){
-    	Serial.println("****** ENVIADO *******");
-        dadosDevice = "";
+      if ( enviado == true){
+         Serial.println("****** ENVIADO *******");
+         dadosDevice = "";
       }
-  taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
+      taskSendMessage.setInterval( random( TASK_SECOND * 1, TASK_SECOND * 5 ));
+    }
 
 }
 

@@ -147,7 +147,8 @@ void channelHop()
 
 bool modoMesh = true;
 //Task taskChaveamento ( TASK_SECOND * 15 , TASK_FOREVER, &chaveamento); //Task que faz o chaveamento, ocorre a cada 15 segundos
-Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
+//Task taskSendMessage( TASK_SECOND * 1 , TASK_FOREVER, &sendMessage );
+Task taskSendMessage( TASK_SECOND * 30 , TASK_FOREVER, &tcpteste );
 
 void chaveamento(){
   if (modoMesh == true){
@@ -159,11 +160,11 @@ void chaveamento(){
 
     meshStart();
 //    Serial.println(dadosDevice);
-    tcpteste(dadosDevice);
+    //tcpteste(dadosDevice);
 
     modoMesh = false;
     //taskChaveamento.delay(30000); //delay de 15 segundos para a operaçao do Mesh, pode ser alterado
-    tcpteste(dadosDevice);
+    //tcpteste(dadosDevice);
 
     } else {
       Serial.println("Modo Sniffer");
@@ -195,7 +196,7 @@ void snifferStart() {
 void receivedCallback( uint32_t from, String &msg ) {
   Serial.printf("++++++ startHere: Received from %u msg=%s\n", from, msg.c_str());
     dadosDevice += msg.c_str();
-    Serial.println(dadosDevice);
+    //Serial.println(dadosDevice);
     //tcpteste(dadosDevice);
 }
 
@@ -223,8 +224,6 @@ void meshStart() {
   mesh.onChangedConnections(&changedConnectionCallback);
   mesh.onNodeTimeAdjusted(&nodeTimeAdjustedCallback);
 
-  taskSendMessage.enable() ;
-
   idNode += mesh.getNodeId();
 
 }
@@ -238,7 +237,8 @@ void sendMessage() {
 
 }
 
-void tcpteste(String textoServer) {
+//void tcpteste(String textoServer) {
+void tcpteste() {
   WiFiClient client;
   const int httpPort = 12000;
   if (!client.connect(host, httpPort)) {
@@ -248,7 +248,10 @@ void tcpteste(String textoServer) {
 
   // This will send the request to the server
   // String msg = mesh.getNodeId() + "," + textoServer;
-  client.print(textoServer);
+  //client.print("Teste 123");
+  //Serial.println(textoServer);
+  //client.print(textoServer);
+  client.print(dadosDevice);
   dadosDevice = "";
   unsigned long timeout = millis();
   while (client.available() == 0) {
@@ -275,13 +278,14 @@ void setup() {
   meshStart();
 
   mesh.scheduler.addTask( taskSendMessage );
+  taskSendMessage.enable() ;
 //  mesh.scheduler.addTask( taskChaveamento );
 //  taskChaveamento.enable();
   }
 
 void loop() {
   mesh.update();
-  tcpteste(dadosDevice);
+  //tcpteste(dadosDevice);
   //tcpteste(dadosDevice);
   //tcpteste(dadosRssi);
   }

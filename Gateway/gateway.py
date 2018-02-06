@@ -6,7 +6,7 @@ con = mysql.connector.connect(user='root', password='', host='localhost', databa
 cursor = con.cursor()
 
 def inserirBanco(cursor, lista):
-    cursor.execute("""INSERT INTO dadosCapturados (id, nodeId, rssi, ch, addr, ssid) VALUES (null, '%s', '%s','%s','%s','%s')""" % (
+    cursor.execute("""INSERT INTO dadosMesh (id, nodeId, rssi, ch, addr, ssid) VALUES (null, '%s', '%s','%s','%s','%s')""" % (
     lista[0], lista[1], lista[2], lista[3], lista[4]))
     con.commit()
 
@@ -28,7 +28,7 @@ while 1:
         # Cria um socket para tratar a conexao do cliente
         connectionSocket, addr = serverSocket.accept()
 
-        dadosRecebidos = connectionSocket.recv(1024)
+        dadosRecebidos = connectionSocket.recv(1048576) # 2^20
         
         if dadosRecebidos == "":
             numSemDado += 1
@@ -36,19 +36,19 @@ while 1:
         else:
             print "////////// Dado recebido: \n" + dadosRecebidos        
         
-        captura = dadosRecebidos.split(" ")
-
-        listaCaptura = captura[0].split("\n")
-        
-        for texto in listaCaptura:
-            lista = texto.split(",")
-            if len(lista) == 5:
-                print("********* Dados Inseridos no BD *********")
-                numSemDado = 0
-                inserirBanco(cursor, lista)
-            print(texto + "\n")
-
-        connectionSocket.send("Gateway recebeu os dados com sucesso!")
+            captura = dadosRecebidos.split(" ")
+    
+            listaCaptura = captura[0].split("\n")
+            
+            for texto in listaCaptura:
+                lista = texto.split(",")
+                if len(lista) == 5:
+                    print("********* Dados Inseridos no BD *********")
+                    numSemDado = 0
+                    inserirBanco(cursor, lista)
+                print(texto + "\n")
+    
+            connectionSocket.send("Gateway recebeu os dados com sucesso!")
 
         connectionSocket.close()
 
