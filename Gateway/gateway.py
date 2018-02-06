@@ -6,8 +6,8 @@ con = mysql.connector.connect(user='root', password='', host='localhost', databa
 cursor = con.cursor()
 
 def inserirBanco(cursor, lista):
-    cursor.execute("""INSERT INTO dadosMesh (id, nodeId, rssi, ch, addr, ssid) VALUES (null, '%s', '%s','%s','%s','%s')""" % (
-    lista[0], lista[1], lista[2], lista[3], lista[4]))
+    cursor.execute("""INSERT INTO dadosMesh (id, nodeId, rssi, ch, addr, ssid) VALUES (null, '%s', '%s', %d,'%s','%s')""" % (
+    lista[0], lista[1], int(lista[2]), lista[3], lista[4]))
     con.commit()
 
 serverPort = 12000
@@ -34,7 +34,7 @@ while 1:
             numSemDado += 1
             print "////////// Nao chegou dado! Tentativa (%d) \n" % numSemDado    
         else:
-            print "////////// Dado recebido: \n" + dadosRecebidos        
+            print "////////// Dados recebidos: \n" + dadosRecebidos        
         
             captura = dadosRecebidos.split(" ")
     
