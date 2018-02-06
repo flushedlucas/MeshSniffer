@@ -2,10 +2,10 @@
 -- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Tempo de geração: 22/01/2018 às 13:41
--- Versão do servidor: 10.1.25-MariaDB
--- Versão do PHP: 7.1.7
+-- Host: 127.0.0.1
+-- Generation Time: 06-Fev-2018 às 09:25
+-- Versão do servidor: 5.5.58-0ubuntu0.14.04.1
+-- PHP Version: 7.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -27,16 +27,17 @@ USE `meshdb`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `dadosCapturados`
+-- Estrutura para tabela `dadosMesh`
 --
 
 CREATE TABLE `dadosCapturados` (
-  `id` int(8) NOT NULL,
-  `nodeId` varchar(45) NOT NULL,
+  `id` int(15) NOT NULL,
+  `nodeId` varchar(20) NOT NULL,
   `rssi` varchar(5) NOT NULL,
   `ch` varchar(5) NOT NULL,
   `addr` varchar(20) NOT NULL,
-  `ssid` varchar(40) NOT NULL
+  `ssid` varchar(60) NOT NULL,
+  `datetime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -46,18 +47,18 @@ CREATE TABLE `dadosCapturados` (
 --
 -- Índices de tabela `dadosCapturados`
 --
-ALTER TABLE `dadosCapturados`
+ALTER TABLE `dadosMesh`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT de tabelas apagadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT de tabela `dadosCapturados`
+-- AUTO_INCREMENT for table `dadosMesh`
 --
 ALTER TABLE `dadosCapturados`
-  MODIFY `id` int(8) NOT NULL AUTO_INCREMENT;COMMIT;
+  MODIFY `id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2778;COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
