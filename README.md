@@ -1,11 +1,11 @@
 # MeshSniffer
 
-##Gateway (PC) 
+## Gateway (PC) 
 Python 2.7
 
-##NodeMCUs 
+## NodeMCUs 
 Arduino IDE 1.8.3
 
-##Biblioteca: Painless Mesh 
+## Biblioteca: Painless Mesh 
 https://gitlab.com/BlackEdder/painlessMesh
 
